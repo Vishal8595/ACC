@@ -407,22 +407,37 @@
         <div class="w-5 h-5 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-2 group-hover:bg-blue-100 transition-colors"><i class="fas fa-list text-white group-hover:text-blue-600 text-xs"></i>
         </div><span>View Services</span>
        </div></a>
-     </div><!-- Compact Trust Indicators -->
-     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl mx-auto">
-      <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-2.5 border border-white border-opacity-20">
-       <div class="flex items-center justify-center mb-1"><i class="fas fa-users text-yellow-300 text-sm mr-1.5"></i> <span class="text-lg font-bold text-white">500+</span>
+     </div><!-- Enhanced Trust Indicators -->
+     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto mt-8">
+      <div class="bg-white bg-opacity-15 backdrop-blur-lg rounded-xl p-4 border border-white border-opacity-30 text-center transform hover:scale-105 transition-all duration-300 shadow-lg">
+       <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-300 rounded-full flex items-center justify-center mb-3 shadow-lg"><i class="fas fa-users text-white text-lg"></i>
+        </div>
+        <div class="text-2xl font-black text-white mb-1 drop-shadow-lg">
+         500+
+        </div>
+        <p class="text-blue-100 text-sm font-semibold tracking-wide">Happy Clients</p>
        </div>
-       <p class="text-blue-100 text-xs font-medium">Happy Clients</p>
       </div>
-      <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-2.5 border border-white border-opacity-20">
-       <div class="flex items-center justify-center mb-1"><i class="fas fa-clock text-yellow-300 text-sm mr-1.5"></i> <span class="text-lg font-bold text-white">24/7</span>
+      <div class="bg-white bg-opacity-15 backdrop-blur-lg rounded-xl p-4 border border-white border-opacity-30 text-center transform hover:scale-105 transition-all duration-300 shadow-lg">
+       <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-300 rounded-full flex items-center justify-center mb-3 shadow-lg"><i class="fas fa-clock text-white text-lg"></i>
+        </div>
+        <div class="text-2xl font-black text-white mb-1 drop-shadow-lg">
+         24/7
+        </div>
+        <p class="text-blue-100 text-sm font-semibold tracking-wide">Support Available</p>
        </div>
-       <p class="text-blue-100 text-xs font-medium">Support Available</p>
       </div>
-      <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-2.5 border border-white border-opacity-20">
-       <div class="flex items-center justify-center mb-1"><i class="fas fa-medal text-yellow-300 text-sm mr-1.5"></i> <span class="text-lg font-bold text-white">15+</span>
+      <div class="bg-white bg-opacity-15 backdrop-blur-lg rounded-xl p-4 border border-white border-opacity-30 text-center transform hover:scale-105 transition-all duration-300 shadow-lg">
+       <div class="flex flex-col items-center">
+        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-300 rounded-full flex items-center justify-center mb-3 shadow-lg"><i class="fas fa-medal text-white text-lg"></i>
+        </div>
+        <div class="text-2xl font-black text-white mb-1 drop-shadow-lg">
+         15+
+        </div>
+        <p class="text-blue-100 text-sm font-semibold tracking-wide">Years Experience</p>
        </div>
-       <p class="text-blue-100 text-xs font-medium">Years Experience</p>
       </div>
      </div>
     </div>
@@ -1131,63 +1146,108 @@
             const businessPhone = config.phone_number || defaultConfig.phone_number;
             const businessEmail = config.email_address || defaultConfig.email_address;
             
-            // Create detailed message template
-            const template = `🔔 NEW INQUIRY ALERT!
-            
-👤 Name: ${name}
-${company && company !== 'Not provided' ? `🏢 Company: ${company}` : ''}
-📧 Email: ${email}
-${phone && phone !== 'Not provided' ? `📱 Phone: ${phone}` : ''}
-🛠️ Service: ${service}
-⚡ Priority: ${priority}
-📞 Preferred Contact: ${method}
-
-💬 Message: ${message}
-
-📅 Inquiry Date: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-
-Please respond as per the preferred contact method.`;
-            
             // Show success message first
             showToast(`✅ Opening ${method === 'whatsapp' ? 'WhatsApp' : method === 'sms' ? 'SMS' : 'Email'} for quick contact...`, "success");
             
             // Small delay to show the success message
             setTimeout(() => {
                 try {
-                    const cleanPhone = businessPhone.replace(/[^0-9]/g, '');
+                    // Clean phone number - remove all non-digits and country code formatting
+                    let cleanPhone = businessPhone.replace(/[^0-9]/g, '');
+                    
+                    // Handle Indian numbers - ensure proper format
+                    if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
+                        // Already has country code
+                        cleanPhone = cleanPhone;
+                    } else if (cleanPhone.startsWith('0')) {
+                        // Remove leading 0 and add country code
+                        cleanPhone = '91' + cleanPhone.substring(1);
+                    } else if (cleanPhone.length === 10) {
+                        // Add country code
+                        cleanPhone = '91' + cleanPhone;
+                    }
                     
                     switch(method) {
                         case 'whatsapp':
-                            // Create shorter WhatsApp message
-                            const whatsappMsg = `Hi! New inquiry from ${name}
-📧 ${email}
-${phone && phone !== 'Not provided' ? `📱 ${phone}` : ''}
-🛠️ Service: ${service}
-⚡ ${priority}
-
-💬 ${message}`;
+                            // Create very short WhatsApp message to avoid blocking
+                            const whatsappMsg = `New inquiry from ${name}
+Email: ${email}
+Service: ${service}
+Message: ${message}`;
                             
-                            const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMsg)}`;
-                            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-                            showToast("📱 WhatsApp opened successfully!", "info");
+                            // Use api.whatsapp.com instead of wa.me for better compatibility
+                            const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(whatsappMsg)}`;
+                            
+                            // Try multiple methods for WhatsApp
+                            const whatsappWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                            
+                            if (!whatsappWindow) {
+                                // Fallback to wa.me if api.whatsapp.com fails
+                                const fallbackUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMsg)}`;
+                                window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+                            }
+                            
+                            showToast("📱 WhatsApp opened! If blocked, try copying contact info below.", "info");
+                            
+                            // Show contact info as backup
+                            setTimeout(() => {
+                                showContactInfo(businessPhone, businessEmail, name, service);
+                            }, 3000);
                             break;
                             
                         case 'sms':
-                            // Create shorter SMS message
-                            const smsMsg = `New inquiry from ${name} (${email}) for ${service}. Priority: ${priority}. Message: ${message}`;
+                            // Create concise SMS message under 160 characters
+                            const smsMsg = `${name} inquiry: ${service}. Email: ${email}. ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`;
+                            
+                            // Use tel: protocol for better mobile compatibility
                             const smsUrl = `sms:${cleanPhone}?body=${encodeURIComponent(smsMsg)}`;
-                            window.open(smsUrl, '_blank', 'noopener,noreferrer');
-                            showToast("💬 SMS app opened successfully!", "info");
+                            
+                            const smsWindow = window.open(smsUrl, '_blank', 'noopener,noreferrer');
+                            
+                            if (!smsWindow) {
+                                // Alternative SMS format
+                                window.location.href = smsUrl;
+                            }
+                            
+                            showToast("💬 SMS app opened! Message ready to send.", "info");
+                            
+                            // Show contact info as backup
+                            setTimeout(() => {
+                                showContactInfo(businessPhone, businessEmail, name, service);
+                            }, 2000);
                             break;
                             
                         case 'email':
                         default:
-                            // Open email client with pre-filled message
+                            // Create detailed email template
+                            const emailTemplate = `NEW INQUIRY ALERT!
+
+Name: ${name}
+${company && company !== 'Not provided' ? `Company: ${company}` : ''}
+Email: ${email}
+${phone && phone !== 'Not provided' ? `Phone: ${phone}` : ''}
+Service: ${service}
+Priority: ${priority}
+Preferred Contact: ${method}
+
+Message: ${message}
+
+Inquiry Date: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+
+Please respond as per the preferred contact method.`;
+                            
                             const subject = encodeURIComponent(`New Inquiry - ${service} (${priority} Priority)`);
-                            const emailBody = encodeURIComponent(template);
+                            const emailBody = encodeURIComponent(emailTemplate);
                             const emailUrl = `mailto:${businessEmail}?subject=${subject}&body=${emailBody}`;
-                            window.open(emailUrl, '_blank', 'noopener,noreferrer');
-                            showToast("📧 Email client opened successfully!", "info");
+                            
+                            const emailWindow = window.open(emailUrl, '_blank', 'noopener,noreferrer');
+                            
+                            if (!emailWindow) {
+                                // Try direct mailto
+                                window.location.href = emailUrl;
+                            }
+                            
+                            showToast("📧 Email client opened with pre-filled message!", "info");
                             break;
                     }
                     
@@ -1199,32 +1259,47 @@ ${phone && phone !== 'Not provided' ? `📱 ${phone}` : ''}
                 } catch (error) {
                     console.error("Error opening message template:", error);
                     
-                    // Fallback - show contact information
-                    showContactFallback(businessPhone, businessEmail, name, service);
+                    // Always show contact information as fallback
+                    showContactInfo(businessPhone, businessEmail, name, service);
                 }
             }, 800);
         }
 
-        function showContactFallback(phone, email, name, service) {
-            const fallbackMsg = `⚠️ Unable to open app automatically. Please contact us directly:
-            
+        function showContactInfo(phone, email, name, service) {
+            const contactMsg = `📞 Direct Contact Information:
+
 📱 WhatsApp/Call: ${phone}
 📧 Email: ${email}
+
+💡 Mention: Inquiry from ${name} for ${service}
+
+Tap to copy contact details 👆`;
             
-Mention: Inquiry from ${name} for ${service}`;
+            showToast(contactMsg, "info");
             
-            showToast(fallbackMsg, "info");
-            
-            // Also try to copy contact info to clipboard
+            // Try to copy contact info to clipboard
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(`${phone} - ${email}`).then(() => {
+                const contactText = `${phone} - ${email}`;
+                navigator.clipboard.writeText(contactText).then(() => {
                     setTimeout(() => {
                         showToast("📋 Contact info copied to clipboard!", "success");
-                    }, 1000);
+                    }, 1500);
                 }).catch(() => {
-                    console.log("Clipboard copy failed");
+                    console.log("Clipboard copy failed - showing manual copy option");
+                    setTimeout(() => {
+                        showToast(`📋 Manual Copy: ${contactText}`, "info");
+                    }, 1500);
                 });
+            } else {
+                // Fallback for browsers without clipboard API
+                setTimeout(() => {
+                    showToast(`📋 Copy This: ${phone} - ${email}`, "info");
+                }, 1500);
             }
+        }
+
+        function showContactFallback(phone, email, name, service) {
+            showContactInfo(phone, email, name, service);
         }
 
         function showToast(message, type = 'info') {
@@ -1384,5 +1459,5 @@ Mention: Inquiry from ${name} for ${service}`;
             }, 250);
         }, { passive: true });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99ed85c1c39459ae',t:'MTc2MzE5Njg1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99ed916474f459ae',t:'MTc2MzE5NzMyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
