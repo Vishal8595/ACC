@@ -731,20 +731,20 @@
         </div>
        </div>
        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div><label for="client-phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label> <input type="tel" id="client-phone" class="form-input focus-enhanced w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent gpu-accelerated">
+        <div><label for="client-phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label> <input type="tel" id="client-phone" required class="form-input focus-enhanced w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent gpu-accelerated">
         </div>
         <div><label for="client-company" class="block text-sm font-medium text-gray-700 mb-2">Company/Business</label> <input type="text" id="client-company" class="form-input focus-enhanced w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent gpu-accelerated">
         </div>
        </div>
        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div><label for="service-type" class="block text-sm font-medium text-gray-700 mb-2">Service Required *</label> <select id="service-type" required class="form-input focus-enhanced w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent gpu-accelerated"> <option value="">Select a service...</option> <option value="tax-planning">Tax Planning &amp; Preparation</option> <option value="bookkeeping">Bookkeeping &amp; Records</option> <option value="payroll">Payroll Management</option> <option value="business-consultation">Business Consultation</option> <option value="audit">Audit &amp; Assurance</option> <option value="financial-planning">Financial Planning</option> <option value="gst-services">GST Services</option> <option value="other">Other Services</option> </select>
+        <div><label for="service-type" class="block text-sm font-medium text-gray-700 mb-2">Service Required</label> <select id="service-type" class="form-input focus-enhanced w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent gpu-accelerated"> <option value="">Select a service (optional)...</option> <option value="tax-planning">Tax Planning &amp; Preparation</option> <option value="bookkeeping">Bookkeeping &amp; Records</option> <option value="payroll">Payroll Management</option> <option value="business-consultation">Business Consultation</option> <option value="audit">Audit &amp; Assurance</option> <option value="financial-planning">Financial Planning</option> <option value="gst-services">GST Services</option> <option value="other">Other Services</option> </select>
         </div>
         <div><label for="priority" class="block text-sm font-medium text-gray-700 mb-2">Priority Level</label> <select id="priority" class="form-input focus-enhanced w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent gpu-accelerated"> <option value="normal">Normal - Standard timeline</option> <option value="urgent">Urgent - Need quick response</option> <option value="consultation">Just need consultation</option> </select>
         </div>
        </div>
        <div><label for="contact-method" class="block text-sm font-medium text-gray-700 mb-2">Preferred Contact Method</label> <select id="contact-method" class="form-input focus-enhanced w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent gpu-accelerated"> <option value="email">Email</option> <option value="whatsapp">WhatsApp Message</option> <option value="sms">Text Message (SMS)</option> </select>
        </div>
-       <div><label for="client-message" class="block text-sm font-medium text-gray-700 mb-2">Message *</label> <textarea id="client-message" required rows="5" class="form-input focus-enhanced w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent gpu-accelerated" placeholder="Please describe your requirements, any specific questions, or additional details..."></textarea>
+       <div><label for="client-message" class="block text-sm font-medium text-gray-700 mb-2">Message</label> <textarea id="client-message" rows="5" class="form-input focus-enhanced w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent gpu-accelerated" placeholder="Please describe your requirements, any specific questions, or additional details (optional)..."></textarea>
        </div>
        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div class="flex items-start"><i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
@@ -1072,11 +1072,12 @@
             // Check if required fields are filled
             const clientName = document.getElementById('client-name').value.trim();
             const clientEmail = document.getElementById('client-email').value.trim();
+            const clientPhone = document.getElementById('client-phone').value.trim();
             const serviceType = document.getElementById('service-type').value;
             const clientMessage = document.getElementById('client-message').value.trim();
 
-            if (!clientName || !clientEmail || !serviceType || !clientMessage) {
-                showToast("❌ Please fill all required fields (marked with *)", "error");
+            if (!clientName || !clientEmail || !clientPhone) {
+                showToast("❌ Please fill all required fields: Full Name, Email Address, and Phone Number", "error");
                 return;
             }
 
@@ -1084,7 +1085,6 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
 
-            const clientPhone = document.getElementById('client-phone').value.trim();
             const clientCompany = document.getElementById('client-company').value.trim();
             const priority = document.getElementById('priority').value;
             const contactMethod = document.getElementById('contact-method').value;
@@ -1102,10 +1102,10 @@
                     id: Date.now().toString(),
                     client_name: clientName,
                     email: clientEmail,
-                    phone: clientPhone || 'Not provided',
+                    phone: clientPhone,
                     company: clientCompany || 'Not provided',
-                    service_type: serviceType,
-                    message: clientMessage,
+                    service_type: serviceType || 'General Inquiry',
+                    message: clientMessage || 'No specific message provided',
                     priority: priority,
                     contact_method: contactMethod,
                     created_date: new Date().toISOString()
@@ -1169,25 +1169,43 @@
                     
                     switch(method) {
                         case 'whatsapp':
-                            // Create very short WhatsApp message to avoid blocking
-                            const whatsappMsg = `New inquiry from ${name}
-Email: ${email}
-Service: ${service}
-Message: ${message}`;
+                            // Create professional WhatsApp message template
+                            const whatsappMsg = `🔔 *NEW INQUIRY ALERT*
+
+👤 *Client Details:*
+• Name: ${name}
+• Email: ${email}
+• Phone: ${phone}
+${company && company !== 'Not provided' ? `• Company: ${company}` : ''}
+
+💼 *Service Required:*
+${service}
+
+⚡ *Priority:* ${priority.charAt(0).toUpperCase() + priority.slice(1)}
+
+📝 *Message:*
+"${message}"
+
+📅 *Inquiry Date:* ${new Date().toLocaleDateString('en-IN')} at ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+
+💬 *Preferred Contact:* ${method === 'whatsapp' ? 'WhatsApp' : method === 'sms' ? 'SMS' : 'Email'}
+
+---
+*Please respond promptly as per client's preference*`;
                             
-                            // Use api.whatsapp.com instead of wa.me for better compatibility
-                            const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(whatsappMsg)}`;
+                            // Use wa.me for better mobile compatibility
+                            const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMsg)}`;
                             
                             // Try multiple methods for WhatsApp
                             const whatsappWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
                             
                             if (!whatsappWindow) {
-                                // Fallback to wa.me if api.whatsapp.com fails
-                                const fallbackUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMsg)}`;
+                                // Fallback to api.whatsapp.com
+                                const fallbackUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(whatsappMsg)}`;
                                 window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
                             }
                             
-                            showToast("📱 WhatsApp opened! If blocked, try copying contact info below.", "info");
+                            showToast("📱 WhatsApp opened with professional message template!", "success");
                             
                             // Show contact info as backup
                             setTimeout(() => {
@@ -1196,20 +1214,44 @@ Message: ${message}`;
                             break;
                             
                         case 'sms':
-                            // Create concise SMS message under 160 characters
-                            const smsMsg = `${name} inquiry: ${service}. Email: ${email}. ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`;
+                            // Create professional SMS message template (optimized for 160 chars)
+                            const smsMsg = `🔔 NEW INQUIRY ALERT
+
+👤 ${name}
+📧 ${email}
+📱 ${phone}
+
+💼 SERVICE: ${service}
+⚡ PRIORITY: ${priority.toUpperCase()}
+
+📝 MESSAGE: "${message.length > 80 ? message.substring(0, 80) + '...' : message}"
+
+📅 ${new Date().toLocaleDateString('en-IN')} ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+
+💬 Contact via: ${method.toUpperCase()}
+
+---
+Please respond promptly to client inquiry`;
                             
-                            // Use tel: protocol for better mobile compatibility
+                            // Use sms: protocol for better mobile compatibility
                             const smsUrl = `sms:${cleanPhone}?body=${encodeURIComponent(smsMsg)}`;
                             
                             const smsWindow = window.open(smsUrl, '_blank', 'noopener,noreferrer');
                             
                             if (!smsWindow) {
-                                // Alternative SMS format
-                                window.location.href = smsUrl;
+                                // Alternative SMS format for different devices
+                                try {
+                                    window.location.href = smsUrl;
+                                } catch (error) {
+                                    // Fallback for desktop - show copy option
+                                    showToast("💬 Copy this SMS template and send manually:", "info");
+                                    setTimeout(() => {
+                                        showToast(`📱 To: ${cleanPhone}\n\n${smsMsg}`, "info");
+                                    }, 1000);
+                                }
                             }
                             
-                            showToast("💬 SMS app opened! Message ready to send.", "info");
+                            showToast("💬 SMS app opened with professional message template!", "success");
                             
                             // Show contact info as backup
                             setTimeout(() => {
@@ -1225,7 +1267,7 @@ Message: ${message}`;
 Name: ${name}
 ${company && company !== 'Not provided' ? `Company: ${company}` : ''}
 Email: ${email}
-${phone && phone !== 'Not provided' ? `Phone: ${phone}` : ''}
+Phone: ${phone}
 Service: ${service}
 Priority: ${priority}
 Preferred Contact: ${method}
@@ -1459,5 +1501,5 @@ Tap to copy contact details 👆`;
             }, 250);
         }, { passive: true });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99ed916474f459ae',t:'MTc2MzE5NzMyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99ed9fadf69759ae',t:'MTc2MzE5NzkxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
